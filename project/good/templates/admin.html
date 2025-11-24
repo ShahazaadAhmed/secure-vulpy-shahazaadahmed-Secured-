@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Dashboard</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa7b2; --accent:#46c3b6;
+      --accent-2:#7bd389; --danger:#ff6b6b; --glass: rgba(255,255,255,0.03);
+      --radius:12px; --pad:18px; --maxw:1200px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:linear-gradient(180deg, #07101a 0%, #071827 50%), radial-gradient(800px 400px at 10% 10%, rgba(70,195,182,0.06), transparent 20%);
+      color:#e6f0f2; line-height:1.35; padding:24px;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      display:flex; justify-content:center;
+    }
+
+    .wrap{
+      width:100%; max-width:var(--maxw); background:linear-gradient(180deg,var(--card), rgba(11,18,32,0.98));
+      border-radius:16px; padding:20px; box-shadow:0 8px 30px rgba(2,6,23,0.6); overflow:hidden;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    header{
+      display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    }
+    header h1{margin:0; font-size:1.35rem; display:flex; gap:10px; align-items:center}
+    header p{margin:6px 0 0; color:var(--muted); font-size:0.95rem}
+    nav a{color:var(--accent-2); text-decoration:none; font-weight:600; margin-right:10px}
+    nav a:hover{text-decoration:underline}
+
+    .grid{
+      margin-top:18px; display:grid; grid-template-columns: 1fr 340px; gap:18px;
+    }
+
+    main{
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      padding:var(--pad); border-radius:12px; min-height:260px; border:1px solid rgba(255,255,255,0.02);
+    }
+
+    aside{
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      padding:var(--pad); border-radius:12px; border:1px solid rgba(255,255,255,0.02);
+      color:var(--muted);
+    }
+
+    .overview{
+      display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;
+    }
+    .stat{
+      background:var(--glass); padding:12px 14px; border-radius:10px; min-width:120px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .stat b{display:block; font-size:1.3rem; color:#e9fbf8}
+    .stat span{font-size:0.9rem; color:var(--muted)}
+
+    progress{width:100%; height:14px; border-radius:10px; overflow:hidden; appearance:none}
+    progress::-webkit-progress-bar{background:rgba(255,255,255,0.02)}
+    progress::-webkit-progress-value{background: linear-gradient(90deg,var(--accent),var(--accent-2))}
+
+    table{width:100%; border-collapse:collapse; margin-top:12px; font-size:0.95rem}
+    caption{caption-side:top; text-align:left; font-weight:600; margin-bottom:8px; color:var(--muted)}
+    thead th{color:var(--muted); font-weight:700; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.06em; padding:10px 8px; text-align:left}
+    tbody tr{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border-radius:8px}
+    tbody tr td{padding:10px 8px; border-top:1px solid rgba(255,255,255,0.02)}
+    tbody tr:nth-child(even) td{background:rgba(255,255,255,0.01)}
+    a.inline{color:var(--accent); text-decoration:none}
+    small{color:var(--muted)}
+
+    details{margin-top:12px}
+    summary{cursor:pointer; color:var(--muted); font-weight:600}
+    ul,ol{padding-left:1.15rem; margin:6px 0}
+
+    .toolbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .btn{
+      display:inline-block; padding:8px 12px; border-radius:8px; text-decoration:none; font-weight:700;
+    }
+    .btn-ghost{color:var(--accent); border:1px solid rgba(70,195,182,0.12); background:transparent}
+    .btn-danger{color:#fff; background:linear-gradient(180deg,var(--danger), #ff4b4b); border:none}
+
+    footer{margin-top:14px; color:var(--muted); font-size:0.9rem; text-align:center}
+
+    /* responsive */
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr; }
+      header{align-items:flex-start}
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>🛡️ Admin Dashboard</h1>
+        <p>Overview and management — quick access to users, posts and system metrics.</p>
+      </div>
+
+      <div class="toolbar" role="toolbar" aria-label="Quick links">
+        <a class="btn btn-ghost" href="/">← Back</a>
+        <a class="btn" style="background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#042025; border-radius:10px;" href="/posts/new">+ New Post</a>
+        <a class="btn btn-ghost" href="/users">Manage Users</a>
+        <a class="btn btn-danger" href="/logout">Sign out</a>
+      </div>
+    </header>
+
+    <div class="grid">
+      <main>
+        <section aria-labelledby="overview" class="overview-section">
+          <div class="overview" aria-hidden="false">
+            <div class="stat" role="group" aria-label="Total users">
+              <span>Total users</span>
+              <b>{{ users|length }}</b>
+            </div>
+            <div class="stat" role="group" aria-label="Total posts">
+              <span>Total posts</span>
+              <b>{{ posts|length }}</b>
+            </div>
+            <div class="stat" role="group" aria-label="Active sessions">
+              <span>Active sessions</span>
+              <b>{{ active_sessions or 0 }}</b>
+            </div>
+            <div class="stat" role="group" aria-label="Pending reports">
+              <span>Pending reports</span>
+              <b>{{ reports_count or 0 }}</b>
+            </div>
+          </div>
+
+          <figure style="margin-top:10px">
+            <figcaption style="color:var(--muted); font-size:0.95rem; margin-bottom:8px">Storage usage</figcaption>
+            <progress value="{{ storage_used or 0 }}" max="{{ storage_total or 100 }}">Storage {{ storage_used or 0 }} / {{ storage_total or 100 }}</progress>
+          </figure>
+        </section>
+
+        <section aria-labelledby="users" style="margin-top:18px">
+          <h2 id="users" style="margin:0 0 8px 0; font-size:1.05rem">Users</h2>
+          <table>
+            <caption>Registered users</caption>
+            <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col">Role</th>
+                <th scope="col">Joined</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in users %}
+              <tr>
+                <td>
+                  <strong style="color:#e9fbf8">{{ u.username if u.username else u }}</strong>
+                  {% if u.email %}<br /><small>{{ u.email }}</small>{% endif %}
+                </td>
+                <td>{{ u.role if u.role else 'user' }}</td>
+                <td>{{ u.joined_at if u.joined_at else '—' }}</td>
+                <td>{{ u.status if u.status else 'active' }}</td>
+              </tr>
+              {% endfor %}
+              {% if users|length == 0 %}
+              <tr><td colspan="4"><em>No users found.</em></td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+
+          <details>
+            <summary>User actions</summary>
+            <ul>
+              <li><a class="inline" href="/users/create">Create user</a></li>
+              <li><a class="inline" href="/users/suspended">View suspended</a></li>
+              <li><a class="inline" href="/users/roles">Manage roles</a></li>
+            </ul>
+          </details>
+        </section>
+
+        <section aria-labelledby="posts" style="margin-top:18px">
+          <h2 id="posts" style="margin:0 0 8px 0; font-size:1.05rem">All Posts</h2>
+          <table>
+            <caption>Posts list</caption>
+            <thead>
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Date</th>
+                <th scope="col">Comments</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in posts %}
+              <tr>
+                <td>
+                  <a class="inline" href="/posts/{{ p.id }}">{{ p.title if p.title else p }}</a>
+                  {% if p.excerpt %}<br /><small>{{ p.excerpt }}</small>{% endif %}
+                </td>
+                <td>{{ p.author }}</td>
+                <td>{{ p.date if p.date else '—' }}</td>
+                <td>{{ p.comments_count if p.comments_count else 0 }}</td>
+                <td>{{ p.status if p.status else 'published' }}</td>
+              </tr>
+              {% endfor %}
+              {% if posts|length == 0 %}
+              <tr><td colspan="5"><em>No posts available.</em></td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+
+          <details>
+            <summary>Post actions</summary>
+            <ul>
+              <li><a class="inline" href="/posts/drafts">View drafts</a></li>
+              <li><a class="inline" href="/posts/flagged">Flagged posts</a></li>
+              <li><a class="inline" href="/posts/bulk">Bulk actions</a></li>
+            </ul>
+          </details>
+        </section>
+      </main>
+
+      <aside aria-labelledby="quick">
+        <h3 id="quick" style="margin-top:0; color:#e9fbf8">Quick actions & notes</h3>
+        <ul>
+          <li>🔎 <a class="inline" href="/search">Search site</a></li>
+          <li>📋 <a class="inline" href="/reports">View reports</a></li>
+          <li>⚙️ <a class="inline" href="/settings">Site settings</a></li>
+        </ul>
+
+        <details>
+          <summary>Recent activity</summary>
+          <ol>
+            {% for a in recent_activity %}
+              <li>{{ a }}</li>
+            {% else %}
+              <li><em>No recent activity</em></li>
+            {% endfor %}
+          </ol>
+        </details>
+
+        <hr style="border:none; border-top:1px solid rgba(255,255,255,0.03); margin:12px 0" />
+        <div style="font-size:0.95rem; color:var(--muted)">
+          <strong>Notifications</strong>
+          <p style="margin:6px 0 0">You have <strong style="color:var(--accent)">{{ reports_count or 0 }}</strong> pending reports.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <small>Last updated: {{ last_updated or "now" }}</small>
+    </footer>
+  </div>
+</body>
+</html>
