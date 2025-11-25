@@ -12,10 +12,12 @@
       {% if username == g.session.username %}
       <form method="POST" action="/posts/" class="w3-padding-16">
         <div class="w3-rest">
+          <input type="hidden" name="csrf_token" value="{{ g.session.get('_csrf') }}">
           <input class="w3-input w3-border" type="text" name="text" placeholder="What's on your mind..?">
         </div>
       </form>
       {% endif %}
+
 
       {% if posts %}
         <ul class="w3-ul w3-left-align w3-border">

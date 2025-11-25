@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from flask import Flask, g, redirect, request
-
+import libcsrf
 import libsession
 from mod_api import mod_api
 from mod_csp import mod_csp
@@ -44,9 +44,11 @@ def do_home():
 @app.before_request
 def before_request():
     g.session = libsession.load(request)
+    libcsrf.ensure_csrf(g.session)
 
 @app.after_request
 def add_csp_headers(response):
+    response = libsession.create(response, g.session)
     csp = (
         "default-src 'self'; "
         "script-src 'self'; "

@@ -71,7 +71,7 @@ def do_login():
         conn.close()
         g.session['role'] = row[0] if row and row[0] else 'user'
         response = make_response(redirect('/'))
-        response = libsession.create(response=response, username=username)
+        response = libsession.create(response, g.session)
         return response
 
     return render_template('user.login.mfa.html')
@@ -86,7 +86,11 @@ def do_create():
 
         username = request.form.get('username')
         password = request.form.get('password')
-
+        token = request.form.get('csrf_token')
+        from libcsrf import validate_csrf
+        if not validate_csrf(g.session, token):
+            flash("Invalid request (CSRF)")
+            return render_template('user.create.html')
         if not username or not password:
             flash("Please, complete username and password")
             return render_template('user.create.html')
@@ -105,7 +109,11 @@ def do_chpasswd():
 
         password = request.form.get('password')
         password_again = request.form.get('password_again')
-
+        token = request.form.get('csrf_token')
+        from libcsrf import validate_csrf
+        if not validate_csrf(g.session, token):
+            flash("Invalid request (CSRF)")
+            return render_template('user.chpasswd.html')
         if password != password_again:
             flash("The passwords don't match")
             return render_template('user.chpasswd.html')
