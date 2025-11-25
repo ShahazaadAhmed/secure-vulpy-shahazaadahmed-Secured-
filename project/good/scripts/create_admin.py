@@ -1,6 +1,6 @@
 import sqlite3, os, sys
 
-DB_PATH = "D:/p&ps/Secure_web/CA-2/app/project/bad/db_users.sqlite"
+DB_PATH = "D:/p&ps/Secure_web/CA-2/Sapp/project/bad/db_users.sqlite"
 ADMIN_USER = "admin"
 ADMIN_PASS = "galgate1234"
 HAS_BCRYPT = False
