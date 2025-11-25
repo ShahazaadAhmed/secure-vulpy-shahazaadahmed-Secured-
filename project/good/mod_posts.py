@@ -45,10 +45,14 @@ def do_create():
         return redirect('/user/login')
 
     if request.method == 'POST':
-
+        
         username = g.session['username']
         text = request.form.get('text')
-
+        # CSRF validation
+        token = request.form.get('csrf_token')
+        from libcsrf import validate_csrf
+        if not validate_csrf(g.session, token):
+            return make_response("400 Bad Request - CSRF token missing or invalid", 400)
         libposts.post(username, text)
 
     return redirect('/')
