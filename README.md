@@ -10,7 +10,7 @@ The primary goal is to implement and document security improvements as required 
 
 ## Features & Security Objectives
 
-### ✔ Core Application Features
+### Core Application Features
 
 * User registration and login
 * MFA support
@@ -19,7 +19,7 @@ The primary goal is to implement and document security improvements as required 
 * Admin dashboard (view all users)
 * Password management
 
-### ✔ Security Enhancements Implemented
+### Security Enhancements Implemented
 
 * **SQL Injection Prevention** – Parameterized queries across the application
 * **CSRF Protection** – Per-session token creation and server-side validation
@@ -100,24 +100,24 @@ http://127.0.1.1:5000
 
 ## Usage Guide
 
-### ▶ Register & Login
+### Register & Login
 
 * Create an account at **/user/create**
 * Login via **/user/login**
 * MFA (if enabled) prompts for OTP
 
-### ▶ Create Posts
+### Create Posts
 
 * Navigate to `/posts/<username>`
 * Use CSRF-protected form to submit posts
 
-### ▶ Admin Dashboard
+### Admin Dashboard
 
 * Login as admin
 * Visit `/posts/admin`
 * View all user profiles/posts (RBAC enforced)
 
-### ▶ Change Password
+### Change Password
 
 * Navigate to `/user/chpasswd`
 * bcrypt-secured update
@@ -168,7 +168,7 @@ http://127.0.1.1:5000
 
 ## Testing Overview
 
-### ✔ Manual Testing
+### Manual Testing
 
 * SQLi payloads (`' OR '1'='1`)
 * XSS payloads (`<script>alert(1)</script>`)
@@ -185,7 +185,5 @@ http://127.0.1.1:5000
 ---
 
 ## Contributions & References
-
-### Original Codebase
 
 * Vulnerable Vulpy: [https://github.com/fportantier/vulpy](https://github.com/fportantier/vulpy)
