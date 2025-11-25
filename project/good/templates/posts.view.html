@@ -12,7 +12,7 @@
       {% if username == g.session.username %}
       <form method="POST" action="/posts/" class="w3-padding-16">
         <div class="w3-rest">
-          <input class="w3-input w3-border" type="text" name="text" placeholder="What are you thinking?">
+          <input class="w3-input w3-border" type="text" name="text" placeholder="What's on your mind..?">
         </div>
       </form>
       {% endif %}
@@ -29,13 +29,19 @@
     {% endif %}
 
     <h3 class="w3-wide">Other users</h3>
-    <ul class="w3-ul w3-left-align w3-border">
-    {% for user in users %}
-      {% if user != username %}
-        <li><a href="/posts/{{ user }}">{{ user }}</a></li>
-      {% endif %}
+    {% set role = g.session.get('role') if g.session else None %}
+    {% if username == 'admin' %}
+      <ul class="w3-ul w3-left-align w3-border">
+      {% for user in users %}
+        {% if user != username %}
+          <li><a href="/posts/{{ user }}">{{ user }}</a></li>
+        {% endif %}
     {% endfor %}
     </ul>
+    {% else %}
+    <div class="w3-small">Other users are visible to admin only.</div>
+    {% endif %}
+
 
   </div>
 {% include "footer.html" %}
