@@ -3,7 +3,9 @@ import libmfa
 import libuser
 import libsession
 import sqlite3
+import os
 from functools import wraps
+
 
 def requires_role(required_role):
     def decorator(f):
@@ -19,24 +21,22 @@ def requires_role(required_role):
                 return redirect('/user/login')
 
             try:
-                conn = sqlite3.connect('db_users.sqlite')
+                db_path = os.path.join(os.path.dirname(__file__), 'db_users.sqlite')
+                conn = sqlite3.connect(db_path)
                 cur = conn.cursor()
                 cur.execute("SELECT role FROM users WHERE username = ?", (uname,))
                 row = cur.fetchone()
                 conn.close()
                 role = row[0] if row and row[0] is not None else 'user'
-            except Exception as e:
-                print("RBAC DB error:", e)
+            except Exception:
                 role = 'user'
 
-            role_norm = str(role).strip().lower()
-            req_norm = str(required_role).strip().lower()
-            print(f"RBAC check: user={uname!r}, role={role!r}, required={required_role!r}")  # debug line
-            if role_norm != req_norm:
+            if str(role).lower() != str(required_role).lower():
                 return make_response("403 Forbidden", 403)
             return f(*args, **kwargs)
         return wrapped
     return decorator
+
 
 mod_user = Blueprint('mod_user', __name__, template_folder='templates')
 
@@ -55,14 +55,21 @@ def do_login():
         username = libuser.login(username, password)
 
         if not username:
-            flash("Invalid user or password");
+            flash("Invalid user or password")
             return render_template('user.login.mfa.html')
 
         if libmfa.mfa_is_enabled(username):
             if not libmfa.mfa_validate(username, otp):
-                flash("Invalid OTP");
+                flash("Invalid OTP")
                 return render_template('user.login.mfa.html')
-
+        g.session['username'] = username
+        db_path = os.path.join(os.path.dirname(__file__), 'db_users.sqlite')
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        cur.execute("SELECT role FROM users WHERE username = ?", (username,))
+        row = cur.fetchone()
+        conn.close()
+        g.session['role'] = row[0] if row and row[0] else 'user'
         response = make_response(redirect('/'))
         response = libsession.create(response=response, username=username)
         return response
@@ -79,7 +86,7 @@ def do_create():
 
         username = request.form.get('username')
         password = request.form.get('password')
-        #email = request.form.get('password')
+
         if not username or not password:
             flash("Please, complete username and password")
             return render_template('user.create.html')
@@ -87,11 +94,6 @@ def do_create():
         libuser.create(username, password)
         flash("User created. Please login.")
         return redirect('/user/login')
-
-        #session['username'] = libuser.login(username, password)
-
-        #if session['username']:
-        #    return redirect('/')
 
     return render_template('user.create.html')
 
@@ -109,11 +111,10 @@ def do_chpasswd():
             return render_template('user.chpasswd.html')
 
         if not libuser.password_complexity(password):
-            flash("The password don't comply our complexity requirements")
+            flash("The password does not meet complexity requirements")
             return render_template('user.chpasswd.html')
 
-        libuser.password_change(g.session['username'], password) # = libuser.login(username, password)
+        libuser.password_change(g.session['username'], password)
         flash("Password changed")
 
     return render_template('user.chpasswd.html')
-

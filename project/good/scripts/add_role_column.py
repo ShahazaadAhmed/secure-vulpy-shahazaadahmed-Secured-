@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sqlite3
 import os
-DB_PATH = os.path.join("D:/p&ps/Secure_web/CA-2/app/project/bad/db_users.sqlite")
+DB_PATH = os.path.join("D:/p&ps/Secure_web/CA-2/Sapp/project/bad/db_users.sqlite")
 
 def main():
     if not os.path.exists(DB_PATH):

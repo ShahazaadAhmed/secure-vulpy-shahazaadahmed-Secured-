@@ -47,10 +47,17 @@ def before_request():
 
 @app.after_request
 def add_csp_headers(response):
-        csp = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none';"
-        response.headers['Content-Security-Policy'] = csp
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.headers['X-Frame-Options'] = 'DENY'
-        response.headers['Referrer-Policy'] = 'no-referrer'
-        return response
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; "
+        "font-src 'self' https://fonts.gstatic.com data:; "
+        "img-src 'self' data:; "
+        "object-src 'none';"
+    )
+    response.headers['Content-Security-Policy'] = csp
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Referrer-Policy'] = 'no-referrer'
+    return response
 app.run(debug=True, host='127.0.1.1', port=5000, extra_files='csp.txt')
