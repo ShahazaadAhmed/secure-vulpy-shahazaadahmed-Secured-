@@ -17,9 +17,6 @@ def _is_bcrypt_hash(s):
 
 
 def _rehash_if_plain(username, plain_password):
-    """
-    If password was stored plaintext and matches plain_password, replace it with bcrypt hash.
-    """
     conn = _get_conn()
     try:
         cur = conn.cursor()
@@ -39,10 +36,6 @@ def _rehash_if_plain(username, plain_password):
 
 
 def login(username, password):
-    """
-    Returns username on success, False on failure.
-    Supports existing plaintext passwords (will re-hash them) and bcrypt-hashed passwords.
-    """
     conn = _get_conn()
     try:
         cur = conn.cursor()
@@ -56,8 +49,6 @@ def login(username, password):
         stored = user["password"]
         if stored is None:
             return False
-
-        # If stored password is a bcrypt hash
         if _is_bcrypt_hash(stored):
             try:
                 ok = bcrypt.checkpw(password.encode(), stored.encode())
@@ -67,9 +58,7 @@ def login(username, password):
                 return user["username"]
             return False
         else:
-            # stored as plaintext (legacy) - compare directly
             if stored == password:
-                # re-hash to bcrypt for future
                 new_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
                 try:
                     cur.execute("UPDATE users SET password = ? WHERE username = ?", (new_hash, username))
