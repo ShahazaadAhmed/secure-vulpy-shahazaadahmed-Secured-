@@ -1,4 +1,4 @@
-# Secure Vulpy – Hardened Web Application
+# Secure Vulpy – Secured Web Application
 
 ## Project Overview
 
